@@ -115,6 +115,33 @@ DISTRO_FEATURES += "x11"
 
 Below are some demos of this layer being used with Pine64 boards.
 
+## Hardware video acceleration examples
+
+### mpv, no rotation
+
+https://www.youtube.com/watch?v=1m416FXKJWY
+
+```
+mpv <file> -vo=gpu --hwdec=drm --drm-device=/dev/dri/card0
+```
+
+
+### Gstreamer, OpenGL rotation
+
+https://www.youtube.com/watch?v=gNg-Jkcy0MY
+
+```
+gst-launch-1.0 filesrc location=<file.mp4> ! qtdemux name=demux  demux.audio_0   ! queue ! decodebin ! audioconvert ! audioresample ! autoaudiosink  demux.video_0 ! queue ! h264parse ! v4l2slh264dec ! glimagesink rotate-method=1 render-rectangle="<0,0,720,1440>
+```
+
+### Gstreamer, rotate using sun8i-rotate (not usable: wrong colors, bad performance)
+
+https://www.youtube.com/watch?v=Tj3qFjfC2dc
+
+```
+gst-launch-1.0 filesrc location=<file.mp4> ! qtdemux name=demux  demux.audio_0   ! queue ! decodebin ! audioconvert ! audioresample ! autoaudiosink  demux.video_0   ! queue ! h264parse ! v4l2slh264dec ! v4l2convert extra-controls="controls,rotate=90" ! video/x-raw,format=I420,width=1080,height=1920,pixel-aspect-ratio=1/1 ! waylandsink fullscreen=true
+```
+
 ## Deploy to SD card
 
 If you're doing this in a Linux environment, you can use the following process to transfer the image to an SD Card.
